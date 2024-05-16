@@ -3,28 +3,20 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
-    public Image image;
-    [SerializeField]
-    private Button button;
+    [SerializeField] private Button button;
 
-    //[HideInInspector]
-    public int x;
-    //[HideInInspector]
-    public int y;
-    [HideInInspector]
-    public Item item;
+    [HideInInspector] public int x;
+    [HideInInspector] public int y;
+    [HideInInspector] public Item item;
 
-    //[HideInInspector]
-    public Tile top;
-    //[HideInInspector]
-    public Tile bottom;
-    //[HideInInspector]
-    public Tile left;
-    //[HideInInspector]
-    public Tile right;
+    [HideInInspector] public Tile top;
+    [HideInInspector] public Tile bottom;
+    [HideInInspector] public Tile left;
+    [HideInInspector] public Tile right;
 
     public Tile[] checkTiles;
-    
+    public Image image;
+
     public void SetTile(Item _item)
     {
         item = _item;
