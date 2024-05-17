@@ -11,11 +11,14 @@ public class Board : MonoBehaviour
 
     public Row[] rows;
     private Item[] items;
+
     private List<Tile> selectedTiles = new List<Tile>();
     private List<Tile> checkedTiles = new List<Tile>();
+    private List<Tile> popTiles = new List<Tile>();
 
     private bool canPop = false;
     private float moveDelay = 0.2f;
+    private int popCount = 0;
 
     public void Awake()
     {
@@ -41,8 +44,6 @@ public class Board : MonoBehaviour
 
     public async void OnClickTile(Tile _tile)
     {
-        //Debug.Log($"current tile x = {_tile.x}, y = {_tile.y}, listCount = {selectedTiles.Count}");
-
         if (selectedTiles.Count > 1)
             return;
 
@@ -55,7 +56,7 @@ public class Board : MonoBehaviour
                 await DoSwap(selectedTiles[0], selectedTiles[1]);
                 await CheckAllTiles();
 
-                if (canPop != true)
+                if (canPop != true && popCount == 0)
                 {
                     await DoSwap(selectedTiles[1], selectedTiles[0]);
                     canPop = false;
@@ -66,14 +67,12 @@ public class Board : MonoBehaviour
                 }
             }
             selectedTiles.Clear();
+            popCount = 0;
         }
     }
 
     public async Task DoSwap(Tile _tile1, Tile _tile2)
     {
-        //Debug.Log($"_tile1 x = {_tile1.x}, y = {_tile1.y}\n" +
-        //    $"_tile2 x = {_tile2.x}, y = {_tile2.y}");
-
         Sequence sequence = DOTween.Sequence();
 
         sequence.Join(_tile1.image.transform.DOMove(_tile2.transform.position, moveDelay))
@@ -122,9 +121,14 @@ public class Board : MonoBehaviour
                 if(checkedTiles.Count > 2)
                 {
                     canPop = true;
-                    await Pop(checkedTiles);
+                    popTiles.AddRange(checkedTiles);
+                    popCount++;
                 }
             }
+        }
+        if(canPop)
+        {
+            await Pop(popTiles);
         }
     }
 
@@ -141,7 +145,6 @@ public class Board : MonoBehaviour
         for (int i = 0; i < _tiles.Count; i++)
         {
             _tiles[i].SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
-            Debug.Log($"_tiles[i]  x = {_tiles[i].x}, y = {_tiles[i].y}");
         }
 
         sequence = DOTween.Sequence();
@@ -151,5 +154,9 @@ public class Board : MonoBehaviour
             sequence.Join(_tiles[i].image.transform.DOScale(Vector3.one, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
+
+        popTiles.Clear();
+        canPop = false;
+        await CheckAllTiles();
     }
 }

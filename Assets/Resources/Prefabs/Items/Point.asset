@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Point
   m_EditorClassIdentifier: 
   value: 1
-  image: {fileID: 21300000, guid: 5e83c0178a92145d58e64f78b343b22b, type: 3}
+  image: {fileID: 21300000, guid: 33d370133c54e4bc9ac13c9fa9331357, type: 3}
