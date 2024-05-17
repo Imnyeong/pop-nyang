@@ -44,6 +44,8 @@ public class Board : MonoBehaviour
 
     public async void OnClickTile(Tile _tile)
     {
+        popCount = 0;
+
         if (selectedTiles.Count > 1)
             return;
 
@@ -67,7 +69,6 @@ public class Board : MonoBehaviour
                 }
             }
             selectedTiles.Clear();
-            popCount = 0;
         }
     }
 
@@ -92,22 +93,50 @@ public class Board : MonoBehaviour
         _tile2.item = tmpItem;
     }
 
-    public void CheckTile(Tile _tile)
+    public async Task CheckHorizon(Tile _tile)
     {
+        if (checkedTiles.Contains(_tile))
+            return;
+
         if (checkedTiles.Count == 0)
         {
             checkedTiles.Add(_tile);
         }
 
-        for (int i = 0; i < _tile.checkTiles.Length; i++)
+        if (_tile.left != null && _tile.left.item == checkedTiles[0].item)
         {
-            if(_tile.checkTiles[i] != null && _tile.checkTiles[i].item == checkedTiles[0].item && !checkedTiles.Contains(_tile.checkTiles[i]) &&
-                (_tile.checkTiles[i].x == checkedTiles[0].x || _tile.checkTiles[i].y == checkedTiles[0].y))
-            {
-                checkedTiles.Add(_tile.checkTiles[i]);
-                CheckTile(_tile.checkTiles[i]);
-            }
+            checkedTiles.Add(_tile.left);
+            await CheckHorizon(_tile.left);
         }
+        if (_tile.right != null && _tile.right.item == checkedTiles[0].item)
+        {
+            checkedTiles.Add(_tile.right);
+            await CheckHorizon(_tile.right);
+        }
+        PopCheck();
+    }
+
+    public async Task CheckVertical(Tile _tile)
+    {
+        if (checkedTiles.Contains(_tile))
+            return;
+
+        if (checkedTiles.Count == 0)
+        {
+            checkedTiles.Add(_tile);
+        }
+        
+        if (_tile.top != null && _tile.top.item == checkedTiles[0].item)
+        {
+            checkedTiles.Add(_tile.top);
+            await CheckVertical(_tile.top);
+        }
+        if (_tile.bottom != null && _tile.bottom.item == checkedTiles[0].item)
+        {
+            checkedTiles.Add(_tile.bottom);
+            await CheckVertical(_tile.bottom);
+        }
+        PopCheck();
     }
 
     public async Task CheckAllTiles()
@@ -117,13 +146,9 @@ public class Board : MonoBehaviour
             for (int x = 0; x < rows[y].tiles.Length; x++)
             {
                 checkedTiles.Clear();
-                CheckTile(rows[y].tiles[x]);
-                if(checkedTiles.Count > 2)
-                {
-                    canPop = true;
-                    popTiles.AddRange(checkedTiles);
-                    popCount++;
-                }
+                await CheckHorizon(rows[y].tiles[x]);
+                checkedTiles.Clear();
+                await CheckVertical(rows[y].tiles[x]);
             }
         }
         if(canPop)
@@ -132,8 +157,18 @@ public class Board : MonoBehaviour
         }
     }
 
+    public void PopCheck()
+    {
+        if (checkedTiles.Count > 2)
+        {
+            canPop = true;
+            popTiles.AddRange(checkedTiles);
+        }
+    }
     public async Task Pop(List<Tile> _tiles)
     {
+        popCount++;
+        Debug.Log("PopCount = " + popCount);
         Sequence sequence = DOTween.Sequence();
 
         for (int i = 0; i < _tiles.Count; i++)
