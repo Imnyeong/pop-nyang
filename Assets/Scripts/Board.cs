@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class Board : MonoBehaviour
 {
     public static Board instance = null;
+    public GameObject tilePool;
 
     public Row[] rows;
     private Item[] items;
@@ -19,6 +20,10 @@ public class Board : MonoBehaviour
     private bool canPop = false;
     private float moveDelay = 0.2f;
     private int popCount = 0;
+    private int downCount = 0;
+
+    private int width => rows[0].tiles.Length;
+    private int height => rows.Length / 2;
 
     public void Awake()
     {
@@ -34,7 +39,7 @@ public class Board : MonoBehaviour
 
         for (int y = 0; y < rows.Length; y++)
         {
-            for(int x = 0; x < rows[y].tiles.Length; x++)
+            for(int x = 0; x < width; x++)
             {
                 rows[y].tiles[x].SetTile(x, y, items[UnityEngine.Random.Range(0, items.Length)]);
             }
@@ -75,24 +80,44 @@ public class Board : MonoBehaviour
     public async Task DoSwap(Tile _tile1, Tile _tile2)
     {
         Sequence sequence = DOTween.Sequence();
+        
+        Vector3 tile1Pos = _tile1.transform.position;
+        Vector3 tile2Pos = _tile2.transform.position;
 
-        sequence.Join(_tile1.image.transform.DOMove(_tile2.transform.position, moveDelay))
-                .Join(_tile2.image.transform.DOMove(_tile1.transform.position, moveDelay));
+        sequence.Join(_tile1.transform.DOMove(tile2Pos, moveDelay))
+                .Join(_tile2.transform.DOMove(tile1Pos, moveDelay));
 
         await sequence.Play().AsyncWaitForCompletion();
 
-        _tile1.image.transform.SetParent(_tile2.transform);
-        _tile2.image.transform.SetParent(_tile1.transform);
+        _tile1.transform.SetParent(rows[_tile2.y].transform);
+        _tile2.transform.SetParent(rows[_tile1.y].transform);
 
-        Image tmpImage = _tile1.image;
-        _tile1.image = _tile2.image;
-        _tile2.image = tmpImage;
+        _tile1.transform.SetSiblingIndex(_tile2.x);
+        _tile2.transform.SetSiblingIndex(_tile1.x);
 
-        Item tmpItem = _tile1.item;
-        _tile1.item = _tile2.item;
-        _tile2.item = tmpItem;
+        rows[_tile1.y].tiles[_tile1.x] = _tile2;
+        rows[_tile2.y].tiles[_tile2.x] = _tile1;
+
+        int tmpValue = _tile1.x;
+        _tile1.x = _tile2.x;
+        _tile2.x = tmpValue;
+
+        tmpValue = _tile1.y;
+        _tile1.y = _tile2.y;
+        _tile2.y = tmpValue;
     }
-
+    public void CheckTile(Tile _tile)
+    {
+        for (int i = 0; i < _tile.checkTiles.Length; i++)
+        {
+            if (_tile.checkTiles[i] != null && _tile.checkTiles[i].item == checkedTiles[0].item && !checkedTiles.Contains(_tile.checkTiles[i]) &&
+            (_tile.checkTiles[i].x == checkedTiles[0].x || _tile.checkTiles[i].y == checkedTiles[0].y))
+            {
+                checkedTiles.Add(_tile.checkTiles[i]);
+                CheckTile(_tile.checkTiles[i]);
+            }
+        }
+    }
     public async Task CheckHorizon(Tile _tile)
     {
         if (checkedTiles.Contains(_tile))
@@ -126,7 +151,7 @@ public class Board : MonoBehaviour
             checkedTiles.Add(_tile);
         }
         
-        if (_tile.top != null && _tile.top.item == checkedTiles[0].item)
+        if (_tile.top.y >= height && _tile.top != null && _tile.top.item == checkedTiles[0].item)
         {
             checkedTiles.Add(_tile.top);
             await CheckVertical(_tile.top);
@@ -141,9 +166,9 @@ public class Board : MonoBehaviour
 
     public async Task CheckAllTiles()
     {
-        for (int y = 0; y < rows.Length; y++)
+        for (int y = rows.Length - 1 ; y >= height; y--)
         {
-            for (int x = 0; x < rows[y].tiles.Length; x++)
+            for (int x = 0; x < width; x++)
             {
                 checkedTiles.Clear();
                 await CheckHorizon(rows[y].tiles[x]);
@@ -151,7 +176,7 @@ public class Board : MonoBehaviour
                 await CheckVertical(rows[y].tiles[x]);
             }
         }
-        if(canPop)
+        if (canPop)
         {
             await Pop(popTiles);
         }
@@ -168,7 +193,6 @@ public class Board : MonoBehaviour
     public async Task Pop(List<Tile> _tiles)
     {
         popCount++;
-        Debug.Log("PopCount = " + popCount);
         Sequence sequence = DOTween.Sequence();
 
         for (int i = 0; i < _tiles.Count; i++)
@@ -176,13 +200,22 @@ public class Board : MonoBehaviour
             sequence.Join(_tiles[i].image.transform.DOScale(Vector3.zero, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
+        //await RefreshAll(_tiles);
+        await CheckAllDownTiles();
 
+        popTiles.Clear();
+        canPop = false;
+
+        await CheckAllTiles();
+    }
+    public async Task RefreshAll(List<Tile> _tiles)
+    {
         for (int i = 0; i < _tiles.Count; i++)
         {
             _tiles[i].SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
         }
 
-        sequence = DOTween.Sequence();
+        Sequence sequence = DOTween.Sequence();
 
         for (int i = 0; i < _tiles.Count; i++)
         {
@@ -190,8 +223,65 @@ public class Board : MonoBehaviour
         }
         await sequence.Play().AsyncWaitForCompletion();
 
-        popTiles.Clear();
-        canPop = false;
-        await CheckAllTiles();
+    }
+    public async Task CheckAllDownTiles()
+    {
+        Sequence sequence = DOTween.Sequence();
+        List<Tile> downTiles = new List<Tile>();
+        List<int> downCounts = new List<int>();
+        
+        for (int x = 0; x < width; x++)
+        {
+            downCount = popTiles.FindAll(_tile => _tile.x == x).Count;
+            downCounts.Add(downCount);
+
+            if (downCount > 0)
+            {
+                for (int y = 0; y < rows.Length; y++)
+                {
+                    if(y + downCount < rows.Length)
+                    {
+                        downTiles.Add(rows[y].tiles[x]);
+                        sequence.Join(rows[y].tiles[x].transform.DOMove(rows[y + downCount].tiles[x].transform.position, moveDelay));
+                    }
+                }
+            }
+        }
+        await sequence.Play().AsyncWaitForCompletion();
+
+        for (int i = 0; i < popTiles.Count; i++)
+        {
+            rows[popTiles[i].y].tiles[popTiles[i].x] = null;
+            popTiles[i].transform.SetParent(tilePool.transform);
+        }
+
+        for (int i = 0; i < downTiles.Count; i++)
+        {
+            downTiles[i].transform.SetParent(rows[downTiles[i].y + downCounts[downTiles[i].x]].transform);
+            rows[downTiles[i].y + downCounts[downTiles[i].x]].tiles[downTiles[i].x] = downTiles[i];
+            downTiles[i].transform.SetSiblingIndex(downTiles[i].x);
+            downTiles[i].y += downCounts[downTiles[i].x];
+        }
+
+        for (int x = 0; x < downCounts.Count; x++)
+        {
+            Debug.Log($"{x} 번쩨 터진 개수 = {downCounts[x]}");
+
+            if (downCounts[x] > 0)
+            {
+                for (int y = 0; y < downCounts[x]; y++)
+                {
+                    //Debug.Log($"{y} 번째");
+                    //rows[y].tiles[x] = null;
+                    //GameObject curGO = tilePool.transform.GetChild(0).gameObject;
+                    //curGO.transform.SetParent(rows[y].transform);
+                    //curGO.transform.SetSiblingIndex(x);
+                    //rows[y].tiles[x] = curGO.GetComponent<Tile>();
+                    //curGO.GetComponent<Tile>().y = y;
+                   // curGO.GetComponent<Tile>().x = x;
+                    //curGO.transform.localScale = Vector3.one;
+                }
+            }
+        }
     }
 }
