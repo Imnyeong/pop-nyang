@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class Board : MonoBehaviour
 {
     public static Board instance = null;
-    public GameObject tilePool;
 
     public Row[] rows;
     private Item[] items;
@@ -151,7 +150,7 @@ public class Board : MonoBehaviour
             checkedTiles.Add(_tile);
         }
         
-        if (_tile.top.y >= height && _tile.top != null && _tile.top.item == checkedTiles[0].item)
+        if (_tile.top != null && _tile.top.y >= height && _tile.top.item == checkedTiles[0].item)
         {
             checkedTiles.Add(_tile.top);
             await CheckVertical(_tile.top);
@@ -187,7 +186,11 @@ public class Board : MonoBehaviour
         if (checkedTiles.Count > 2)
         {
             canPop = true;
-            popTiles.AddRange(checkedTiles);
+            foreach(Tile _tile in checkedTiles)
+            {
+                if (!popTiles.Contains(_tile))
+                    popTiles.Add(_tile);
+            }
         }
     }
     public async Task Pop(List<Tile> _tiles)
@@ -200,7 +203,6 @@ public class Board : MonoBehaviour
             sequence.Join(_tiles[i].image.transform.DOScale(Vector3.zero, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
-        //await RefreshAll(_tiles);
         await CheckAllDownTiles();
 
         popTiles.Clear();
@@ -208,20 +210,10 @@ public class Board : MonoBehaviour
 
         await CheckAllTiles();
     }
-    public async Task RefreshAll(List<Tile> _tiles)
+    public void RefreshTile(int _x, int _y, Tile _tile)
     {
-        for (int i = 0; i < _tiles.Count; i++)
-        {
-            _tiles[i].SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
-        }
-
-        Sequence sequence = DOTween.Sequence();
-
-        for (int i = 0; i < _tiles.Count; i++)
-        {
-            sequence.Join(_tiles[i].image.transform.DOScale(Vector3.one, moveDelay));
-        }
-        await sequence.Play().AsyncWaitForCompletion();
+        _tile.SetTile(_x, _y, items[UnityEngine.Random.Range(0, items.Length)]);
+        _tile.image.transform.localScale = Vector3.one;
 
     }
     public async Task CheckAllDownTiles()
@@ -232,14 +224,25 @@ public class Board : MonoBehaviour
         
         for (int x = 0; x < width; x++)
         {
-            downCount = popTiles.FindAll(_tile => _tile.x == x).Count;
+            List<Tile> curTiles = popTiles.FindAll(_tile => _tile.x == x);
+
+            downCount = curTiles.Count;
             downCounts.Add(downCount);
 
+            int maxDepth = 0;
+            for (int i = 0; i < curTiles.Count; i++)
+            {
+                if (curTiles[i].y >= maxDepth)
+                    maxDepth = curTiles[i].y;
+            }
+            Debug.Log($"터진 타일 중 가장 낮은 y값은 {maxDepth}");
             if (downCount > 0)
             {
+                Debug.Log($"downCount = {downCount}");
+
                 for (int y = 0; y < rows.Length; y++)
                 {
-                    if(y + downCount < rows.Length)
+                    if(y + downCount <= maxDepth)
                     {
                         downTiles.Add(rows[y].tiles[x]);
                         sequence.Join(rows[y].tiles[x].transform.DOMove(rows[y + downCount].tiles[x].transform.position, moveDelay));
@@ -252,34 +255,39 @@ public class Board : MonoBehaviour
         for (int i = 0; i < popTiles.Count; i++)
         {
             rows[popTiles[i].y].tiles[popTiles[i].x] = null;
-            popTiles[i].transform.SetParent(tilePool.transform);
         }
 
         for (int i = 0; i < downTiles.Count; i++)
         {
+            Debug.Log($"내릴 타일 x = {downTiles[i].x}, y = {downTiles[i].y}");
+
             downTiles[i].transform.SetParent(rows[downTiles[i].y + downCounts[downTiles[i].x]].transform);
             rows[downTiles[i].y + downCounts[downTiles[i].x]].tiles[downTiles[i].x] = downTiles[i];
             downTiles[i].transform.SetSiblingIndex(downTiles[i].x);
             downTiles[i].y += downCounts[downTiles[i].x];
+
+            Debug.Log($"내린 위치 x = {downTiles[i].x}, y = {downTiles[i].y}");
         }
 
         for (int x = 0; x < downCounts.Count; x++)
         {
-            Debug.Log($"{x} 번쩨 터진 개수 = {downCounts[x]}");
+            //Debug.Log($"{x} 번쩨 터진 개수 = {downCounts[x]}");
 
             if (downCounts[x] > 0)
             {
                 for (int y = 0; y < downCounts[x]; y++)
                 {
-                    //Debug.Log($"{y} 번째");
-                    //rows[y].tiles[x] = null;
-                    //GameObject curGO = tilePool.transform.GetChild(0).gameObject;
-                    //curGO.transform.SetParent(rows[y].transform);
-                    //curGO.transform.SetSiblingIndex(x);
-                    //rows[y].tiles[x] = curGO.GetComponent<Tile>();
-                    //curGO.GetComponent<Tile>().y = y;
-                   // curGO.GetComponent<Tile>().x = x;
-                    //curGO.transform.localScale = Vector3.one;
+                    rows[y].tiles[x] = null;
+                    Tile curTile = popTiles[popTiles.Count - 1];
+                    Debug.Log($"터진 타일 x = {curTile.x}, y = {curTile.y}");
+
+                    curTile.transform.SetParent(rows[y].transform);
+                    curTile.transform.SetSiblingIndex(x);
+                    rows[y].tiles[x] = curTile;
+                    RefreshTile(x, y, curTile);
+                    popTiles.Remove(curTile);
+
+                    Debug.Log($"터진 후 이동한 위치 x = {curTile.x}, y = {curTile.y}");
                 }
             }
         }

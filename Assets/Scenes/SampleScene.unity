@@ -838,41 +838,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b70de985f11404084aa62d73d8e411cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &458784494
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 458784495}
-  m_Layer: 5
-  m_Name: TilePool
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &458784495
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 458784494}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -100}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1235994536}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1821,7 +1786,6 @@ RectTransform:
   - {fileID: 1693830410}
   - {fileID: 86988144}
   - {fileID: 797192417}
-  - {fileID: 458784495}
   m_Father: {fileID: 1035535246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1875,7 +1839,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d44bf42ab2f044595839c58604a1174a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePool: {fileID: 458784495}
   rows:
   - {fileID: 757246679}
   - {fileID: 2018575223}
