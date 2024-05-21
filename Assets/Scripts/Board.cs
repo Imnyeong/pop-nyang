@@ -235,11 +235,8 @@ public class Board : MonoBehaviour
                 if (curTiles[i].y >= maxDepth)
                     maxDepth = curTiles[i].y;
             }
-            //Debug.Log($"터진 타일 중 가장 낮은 y값은 {maxDepth}");
             if (downCount > 0)
             {
-                //Debug.Log($"downCount = {downCount}");
-
                 for (int y = 0; y < rows.Length; y++)
                 {
                     if (y + downCount <= maxDepth)
@@ -250,40 +247,32 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        await sequence.Play().AsyncWaitForCompletion();
-
-        for (int i = 0; i < downTiles.Count; i++)
+        sequence.OnComplete(delegate
         {
-            //Debug.Log($"내릴 타일 x = {downTiles[i].x}, y = {downTiles[i].y}");
-
-            downTiles[i].transform.SetParent(rows[downTiles[i].y + downCounts[downTiles[i].x]].transform);
-            rows[downTiles[i].y + downCounts[downTiles[i].x]].tiles[downTiles[i].x] = downTiles[i];
-            downTiles[i].transform.SetSiblingIndex(downTiles[i].x);
-            downTiles[i].y += downCounts[downTiles[i].x];
-
-            //Debug.Log($"내린 위치 x = {downTiles[i].x}, y = {downTiles[i].y}");
-        }
-
-        for (int x = 0; x < downCounts.Count; x++)
-        {
-            //Debug.Log($"{x} 번쩨 터진 개수 = {downCounts[x]}");
-
-            if (downCounts[x] > 0)
+            for (int i = 0; i < downTiles.Count; i++)
             {
-                for (int y = 0; y < downCounts[x]; y++)
+                downTiles[i].transform.SetParent(rows[downTiles[i].y + downCounts[downTiles[i].x]].transform);
+                rows[downTiles[i].y + downCounts[downTiles[i].x]].tiles[downTiles[i].x] = downTiles[i];
+                downTiles[i].transform.SetSiblingIndex(downTiles[i].x);
+                downTiles[i].y += downCounts[downTiles[i].x];
+            }
+
+            for (int x = 0; x < downCounts.Count; x++)
+            {
+                if (downCounts[x] > 0)
                 {
-                    Tile curTile = popTiles[popTiles.Count - 1];
-                    //Debug.Log($"터진 타일 x = {curTile.x}, y = {curTile.y}");
-
-                    curTile.transform.SetParent(rows[y].transform);
-                    curTile.transform.SetSiblingIndex(x);
-                    rows[y].tiles[x] = curTile;
-                    RefreshTile(x, y, curTile);
-                    popTiles.Remove(curTile);
-
-                    //Debug.Log($"터진 후 이동한 위치 x = {curTile.x}, y = {curTile.y}");
+                    for (int y = 0; y < downCounts[x]; y++)
+                    {
+                        Tile curTile = popTiles[popTiles.Count - 1];
+                        curTile.transform.SetParent(rows[y].transform);
+                        curTile.transform.SetSiblingIndex(x);
+                        rows[y].tiles[x] = curTile;
+                        RefreshTile(x, y, curTile);
+                        popTiles.Remove(curTile);
+                    }
                 }
             }
-        }
+        });
+        await sequence.Play().AsyncWaitForCompletion();
     }
 }
