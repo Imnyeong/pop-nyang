@@ -200,7 +200,8 @@ public class Board : MonoBehaviour
 
         for (int i = 0; i < _tiles.Count; i++)
         {
-            sequence.Join(_tiles[i].image.transform.DOScale(Vector3.zero, moveDelay));
+            sequence.Join(_tiles[i].image.transform.DOScale(Vector3.zero, moveDelay))
+                .Join(_tiles[i].background.transform.DOScale(Vector3.zero, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
         await CheckAllDownTiles();
@@ -214,7 +215,7 @@ public class Board : MonoBehaviour
     {
         _tile.SetTile(_x, _y, items[UnityEngine.Random.Range(0, items.Length)]);
         _tile.image.transform.localScale = Vector3.one;
-
+        _tile.background.transform.localScale = Vector3.one;
     }
     public async Task CheckAllDownTiles()
     {

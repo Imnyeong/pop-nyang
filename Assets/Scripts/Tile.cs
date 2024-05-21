@@ -16,6 +16,7 @@ public class Tile : MonoBehaviour
     public Tile right => x == Board.instance.rows[y].tiles.Length - 1 ? null : Board.instance.rows[y].tiles[x + 1];
 
     public Tile[] checkTiles => new Tile[] { top, bottom, left, right };
+    public Image background;
     public Image image;
 
     public void Start()
