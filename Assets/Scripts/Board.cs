@@ -221,7 +221,7 @@ public class Board : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
         List<Tile> downTiles = new List<Tile>();
         List<int> downCounts = new List<int>();
-        
+
         for (int x = 0; x < width; x++)
         {
             List<Tile> curTiles = popTiles.FindAll(_tile => _tile.x == x);
@@ -235,14 +235,14 @@ public class Board : MonoBehaviour
                 if (curTiles[i].y >= maxDepth)
                     maxDepth = curTiles[i].y;
             }
-            Debug.Log($"터진 타일 중 가장 낮은 y값은 {maxDepth}");
+            //Debug.Log($"터진 타일 중 가장 낮은 y값은 {maxDepth}");
             if (downCount > 0)
             {
-                Debug.Log($"downCount = {downCount}");
+                //Debug.Log($"downCount = {downCount}");
 
                 for (int y = 0; y < rows.Length; y++)
                 {
-                    if(y + downCount <= maxDepth)
+                    if (y + downCount <= maxDepth)
                     {
                         downTiles.Add(rows[y].tiles[x]);
                         sequence.Join(rows[y].tiles[x].transform.DOMove(rows[y + downCount].tiles[x].transform.position, moveDelay));
@@ -252,21 +252,16 @@ public class Board : MonoBehaviour
         }
         await sequence.Play().AsyncWaitForCompletion();
 
-        for (int i = 0; i < popTiles.Count; i++)
-        {
-            rows[popTiles[i].y].tiles[popTiles[i].x] = null;
-        }
-
         for (int i = 0; i < downTiles.Count; i++)
         {
-            Debug.Log($"내릴 타일 x = {downTiles[i].x}, y = {downTiles[i].y}");
+            //Debug.Log($"내릴 타일 x = {downTiles[i].x}, y = {downTiles[i].y}");
 
             downTiles[i].transform.SetParent(rows[downTiles[i].y + downCounts[downTiles[i].x]].transform);
             rows[downTiles[i].y + downCounts[downTiles[i].x]].tiles[downTiles[i].x] = downTiles[i];
             downTiles[i].transform.SetSiblingIndex(downTiles[i].x);
             downTiles[i].y += downCounts[downTiles[i].x];
 
-            Debug.Log($"내린 위치 x = {downTiles[i].x}, y = {downTiles[i].y}");
+            //Debug.Log($"내린 위치 x = {downTiles[i].x}, y = {downTiles[i].y}");
         }
 
         for (int x = 0; x < downCounts.Count; x++)
@@ -277,9 +272,8 @@ public class Board : MonoBehaviour
             {
                 for (int y = 0; y < downCounts[x]; y++)
                 {
-                    rows[y].tiles[x] = null;
                     Tile curTile = popTiles[popTiles.Count - 1];
-                    Debug.Log($"터진 타일 x = {curTile.x}, y = {curTile.y}");
+                    //Debug.Log($"터진 타일 x = {curTile.x}, y = {curTile.y}");
 
                     curTile.transform.SetParent(rows[y].transform);
                     curTile.transform.SetSiblingIndex(x);
@@ -287,7 +281,7 @@ public class Board : MonoBehaviour
                     RefreshTile(x, y, curTile);
                     popTiles.Remove(curTile);
 
-                    Debug.Log($"터진 후 이동한 위치 x = {curTile.x}, y = {curTile.y}");
+                    //Debug.Log($"터진 후 이동한 위치 x = {curTile.x}, y = {curTile.y}");
                 }
             }
         }
