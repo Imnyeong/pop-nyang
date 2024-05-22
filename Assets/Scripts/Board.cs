@@ -196,6 +196,8 @@ public class Board : MonoBehaviour
         canControl = false;
         popCount = 0;
 
+        UIManager.instance.timer += 0.5f;
+
         Item item = items[UnityEngine.Random.Range(0, items.Length)];
 
         foreach (Row _row in rows)
