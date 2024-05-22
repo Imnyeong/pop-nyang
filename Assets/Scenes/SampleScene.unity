@@ -528,8 +528,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -400}
-  m_SizeDelta: {x: 350.13455, y: 220.98656}
+  m_AnchoredPosition: {x: 0, y: -420}
+  m_SizeDelta: {x: 423.74997, y: 254.99998}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &126333770
 MonoBehaviour:
@@ -566,8 +566,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 100
+    m_Font: {fileID: 12800000, guid: 3c598a8c88f684904a7078b54a44e4ae, type: 3}
+    m_FontSize: 120
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -1177,7 +1177,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 60}
+  m_AnchoredPosition: {x: 0, y: 70}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &704745352
@@ -1215,12 +1215,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 3c598a8c88f684904a7078b54a44e4ae, type: 3}
     m_FontSize: 80
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
-    m_MaxSize: 160
+    m_MaxSize: 200
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1229,7 +1229,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'SCORE
 
-    0'
+    20045'
 --- !u!222 &704745354
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1904,7 +1904,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 479.28253, y: 132.01794}
+  m_SizeDelta: {x: 557.8125, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1050635823
 MonoBehaviour:
@@ -1941,8 +1941,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 120
+    m_Font: {fileID: 12800000, guid: 3c598a8c88f684904a7078b54a44e4ae, type: 3}
+    m_FontSize: 140
     m_FontStyle: 2
     m_BestFit: 0
     m_MinSize: 0
@@ -2887,10 +2887,9 @@ MonoBehaviour:
   refreshButton: {fileID: 384568642}
   bombButton: {fileID: 1227238636}
   soundButton: {fileID: 1977831746}
-  gameoverPopup: {fileID: 292965651}
+  gameoverPopup: {fileID: 292965653}
   scoreText: {fileID: 704745353}
   comboText: {fileID: 1050635824}
-  timeValue: 120
   timer: 0
   score: 0
 --- !u!1 &1557049735
