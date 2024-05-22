@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -8,8 +9,8 @@ using UnityEngine.UI;
 public class Board : MonoBehaviour
 {
     public static Board instance = null;
-
     public Row[] rows;
+
     private Item[] items;
 
     private List<Tile> selectedTiles = new List<Tile>();
@@ -17,6 +18,8 @@ public class Board : MonoBehaviour
     private List<Tile> popTiles = new List<Tile>();
 
     private bool canPop = false;
+    private bool canControl = false;
+
     private float moveDelay = 0.2f;
     private int popCount = 0;
 
@@ -28,22 +31,37 @@ public class Board : MonoBehaviour
         }
     }
 
-    public async void Start()
+    public void Start()
     {
         items = Resources.LoadAll<Item>("Prefabs/Items");
+        SetAllTiles();
+    }
 
-        for (int y = 0; y < rows.Length; y++)
+    public async void SetAllTiles()
+    {
+        foreach (Row _row in rows)
         {
-            for(int x = 0; x < rows[y].tiles.Length; x++)
+            foreach (Tile _tile in _row.tiles)
             {
-                rows[y].tiles[x].SetTile(x, y, items[UnityEngine.Random.Range(0, items.Length)]);
+                _tile.SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
             }
         }
         await CheckAllTiles();
     }
 
+    public void OnClickRefresh()
+    {
+        if (!canControl)
+            return;
+
+        SetAllTiles();
+    }
+
     public async void OnClickTile(Tile _tile)
     {
+        if (!canControl)
+            return;
+
         if (selectedTiles.Count > 1)
             return;
 
@@ -56,14 +74,10 @@ public class Board : MonoBehaviour
                 await DoSwap(selectedTiles[0], selectedTiles[1]);
                 await CheckAllTiles();
 
-                if (canPop != true && popCount == 0)
+                if (canPop == false && popCount == 0)
                 {
                     await DoSwap(selectedTiles[1], selectedTiles[0]);
                     canPop = false;
-                }
-                else
-                {
-                    await CheckAllTiles();
                 }
             }
             selectedTiles.Clear();
@@ -78,21 +92,62 @@ public class Board : MonoBehaviour
         sequence.Join(_tile1.image.transform.DOMove(_tile2.transform.position, moveDelay))
                 .Join(_tile2.image.transform.DOMove(_tile1.transform.position, moveDelay));
 
+        sequence.OnComplete(delegate
+        {
+            _tile1.image.transform.SetParent(_tile2.transform);
+            _tile2.image.transform.SetParent(_tile1.transform);
+
+            Image tmpImage = _tile1.image;
+            _tile1.image = _tile2.image;
+            _tile2.image = tmpImage;
+
+            Image tmpIcon = _tile1.icon;
+            _tile1.icon = _tile2.icon;
+            _tile2.icon = tmpIcon;
+
+            Item tmpItem = _tile1.item;
+            _tile1.item = _tile2.item;
+            _tile2.item = tmpItem;
+
+        });
+
         await sequence.Play().AsyncWaitForCompletion();
-
-        _tile1.image.transform.SetParent(_tile2.transform);
-        _tile2.image.transform.SetParent(_tile1.transform);
-
-        Image tmpImage = _tile1.image;
-        _tile1.image = _tile2.image;
-        _tile2.image = tmpImage;
-
-        Item tmpItem = _tile1.item;
-        _tile1.item = _tile2.item;
-        _tile2.item = tmpItem;
     }
 
-    public void CheckTile(Tile _tile)
+    public async Task CheckAllTiles()
+    {
+        canPop = false;
+        canControl = false;
+
+        foreach (Row _row in rows)
+        {
+            foreach (Tile _tile in _row.tiles)
+            {
+                checkedTiles.Clear();
+                await CheckTile(_tile);
+
+                if (checkedTiles.Count > 2)
+                {
+                    canPop = true;
+                    popTiles.AddRange(checkedTiles);
+                    popCount++;
+                }
+            }
+        }
+        if (canPop)
+        {
+            popTiles = popTiles.Distinct().ToList();
+            await Pop(popTiles);
+            await CheckAllTiles();
+        }
+        else
+        {
+            popTiles.Clear();
+            canControl = true;
+        }
+    }
+
+    public async Task CheckTile(Tile _tile)
     {
         if (checkedTiles.Count == 0)
         {
@@ -101,34 +156,11 @@ public class Board : MonoBehaviour
 
         for (int i = 0; i < _tile.checkTiles.Length; i++)
         {
-            if(_tile.checkTiles[i] != null && _tile.checkTiles[i].item == checkedTiles[0].item && !checkedTiles.Contains(_tile.checkTiles[i]) &&
-                (_tile.checkTiles[i].x == checkedTiles[0].x || _tile.checkTiles[i].y == checkedTiles[0].y))
+            if(_tile.checkTiles[i] != null && !checkedTiles.Contains(_tile.checkTiles[i]) && _tile.checkTiles[i].item == checkedTiles[0].item)
             {
                 checkedTiles.Add(_tile.checkTiles[i]);
-                CheckTile(_tile.checkTiles[i]);
+                await CheckTile(_tile.checkTiles[i]);
             }
-        }
-    }
-
-    public async Task CheckAllTiles()
-    {
-        for (int y = 0; y < rows.Length; y++)
-        {
-            for (int x = 0; x < rows[y].tiles.Length; x++)
-            {
-                checkedTiles.Clear();
-                CheckTile(rows[y].tiles[x]);
-                if(checkedTiles.Count > 2)
-                {
-                    canPop = true;
-                    popTiles.AddRange(checkedTiles);
-                    popCount++;
-                }
-            }
-        }
-        if(canPop)
-        {
-            await Pop(popTiles);
         }
     }
 
@@ -136,27 +168,25 @@ public class Board : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
 
-        for (int i = 0; i < _tiles.Count; i++)
+        foreach(Tile _tile in _tiles)
         {
-            sequence.Join(_tiles[i].image.transform.DOScale(Vector3.zero, moveDelay));
+            sequence.Join(_tile.image.transform.DOScale(Vector3.zero, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
 
-        for (int i = 0; i < _tiles.Count; i++)
+        foreach (Tile _tile in _tiles)
         {
-            _tiles[i].SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
+            _tile.SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
         }
 
         sequence = DOTween.Sequence();
 
-        for (int i = 0; i < _tiles.Count; i++)
+        foreach (Tile _tile in _tiles)
         {
-            sequence.Join(_tiles[i].image.transform.DOScale(Vector3.one, moveDelay));
+            sequence.Join(_tile.image.transform.DOScale(Vector3.one, moveDelay));
         }
         await sequence.Play().AsyncWaitForCompletion();
 
         popTiles.Clear();
-        canPop = false;
-        await CheckAllTiles();
     }
 }
