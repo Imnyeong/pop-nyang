@@ -17,6 +17,7 @@ public class Board : MonoBehaviour
     private List<Tile> popTiles = new List<Tile>();
 
     private bool canPop = false;
+    private bool canControl = false;
     private float moveDelay = 0.2f;
     private int popCount = 0;
     private int downCount = 0;
@@ -48,6 +49,9 @@ public class Board : MonoBehaviour
 
     public async void OnClickTile(Tile _tile)
     {
+        if (!canControl)
+            return;
+
         popCount = 0;
 
         if (selectedTiles.Count > 1)
@@ -62,14 +66,10 @@ public class Board : MonoBehaviour
                 await DoSwap(selectedTiles[0], selectedTiles[1]);
                 await CheckAllTiles();
 
-                if (canPop != true && popCount == 0)
+                if (canPop == false && popCount == 0)
                 {
                     await DoSwap(selectedTiles[1], selectedTiles[0]);
-                    canPop = false;
-                }
-                else
-                {
-                    await CheckAllTiles();
+                    canControl = true;
                 }
             }
             selectedTiles.Clear();
@@ -104,6 +104,9 @@ public class Board : MonoBehaviour
         tmpValue = _tile1.y;
         _tile1.y = _tile2.y;
         _tile2.y = tmpValue;
+
+
+
     }
     public void CheckTile(Tile _tile)
     {
@@ -165,7 +168,7 @@ public class Board : MonoBehaviour
 
     public async Task CheckAllTiles()
     {
-        for (int y = rows.Length - 1 ; y >= height; y--)
+        for (int y = height ; y < rows.Length; y++)
         {
             for (int x = 0; x < width; x++)
             {
@@ -177,7 +180,12 @@ public class Board : MonoBehaviour
         }
         if (canPop)
         {
+            canControl = false;
             await Pop(popTiles);
+        }
+        else
+        {
+            canControl = true;
         }
     }
 
