@@ -187,6 +187,7 @@ public class Board : MonoBehaviour
         if(popCount > 2)
         {
             UIManager.instance.bombButton.interactable = true;
+            UIManager.instance.ShowCombo(popCount);
         }
     }
 

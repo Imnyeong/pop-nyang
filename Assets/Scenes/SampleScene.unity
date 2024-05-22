@@ -160,7 +160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -30}
+  m_AnchoredPosition: {x: 110, y: -30}
   m_SizeDelta: {x: 670.6, y: 130.2}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &28680345
@@ -1531,8 +1531,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2451,9 +2451,9 @@ RectTransform:
   - {fileID: 1227238635}
   - {fileID: 384568641}
   - {fileID: 28680344}
-  - {fileID: 292965652}
   - {fileID: 704745351}
   - {fileID: 1050635822}
+  - {fileID: 292965652}
   m_Father: {fileID: 2087491216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2487,9 +2487,10 @@ MonoBehaviour:
   soundButton: {fileID: 1977831746}
   gameoverPopup: {fileID: 292965651}
   scoreText: {fileID: 704745353}
-  comboText: {fileID: 0}
+  comboText: {fileID: 1050635824}
   timeValue: 120
   timer: 0
+  score: 0
 --- !u!1 &1557049735
 GameObject:
   m_ObjectHideFlags: 0
@@ -2524,7 +2525,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -120, y: 10}
+  m_AnchoredPosition: {x: -140, y: 10}
   m_SizeDelta: {x: 191.8, y: 198.1}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1557049737

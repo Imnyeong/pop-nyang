@@ -18,9 +18,14 @@ public class UIManager : MonoBehaviour
     public Text scoreText;
     public Text comboText;
 
-    private float refreshDelay = 5.0f;
-    public float timeValue = 120.0f;
-    public float timer;
+    [HideInInspector] private float refreshDelay = 5.0f;
+    [HideInInspector] public float timeValue = 120.0f;
+    [HideInInspector] public float timer;
+
+    [HideInInspector] public int score = 0;
+    private IEnumerator comboCoroutine = null;
+    private float comboDelay = 0.5f;
+
 
     private void Awake()
     {
@@ -34,6 +39,7 @@ public class UIManager : MonoBehaviour
         refreshButton.onClick.AddListener(OnClickRefresh);
         bombButton.onClick.AddListener(OnClickBomb);
 
+        score = 0;
         timer = timeValue;
         StartCoroutine(TimeCoroutine());
     }
@@ -76,4 +82,22 @@ public class UIManager : MonoBehaviour
         Board.instance.Bomb();
     }
 
+    public void ShowCombo(int _combo)
+    {
+        if(comboCoroutine != null)
+        {
+            StopCoroutine(comboCoroutine);
+            comboCoroutine = null;
+        }
+        comboCoroutine = ComboCoroutine(_combo);
+        StartCoroutine(comboCoroutine);
+    }
+
+    public IEnumerator ComboCoroutine(int _combo)
+    {
+        comboText.text = $"{_combo} Combo!";
+        comboText.gameObject.SetActive(true);
+        yield return new WaitForSecondsRealtime(comboDelay);
+        comboText.gameObject.SetActive(false);
+    }
 }
