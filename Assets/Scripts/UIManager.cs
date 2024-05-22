@@ -13,19 +13,18 @@ public class UIManager : MonoBehaviour
     public Button bombButton;
     public Button soundButton;
 
-    public GameObject gameoverPopup;
+    public GameOverPopup gameoverPopup;
 
     public Text scoreText;
     public Text comboText;
 
-    [HideInInspector] private float refreshDelay = 5.0f;
-    [HideInInspector] public float timeValue = 120.0f;
+    private float refreshDelay = 5.0f;
+    private float timeValue = 120.0f;
     [HideInInspector] public float timer;
 
     [HideInInspector] public int score = 0;
     private IEnumerator comboCoroutine = null;
     private float comboDelay = 0.5f;
-
 
     private void Awake()
     {
@@ -52,7 +51,8 @@ public class UIManager : MonoBehaviour
         if(timer <= 0.0f)
         {
             StopAllCoroutines();
-            gameoverPopup.SetActive(true);
+            gameoverPopup.gameObject.SetActive(true);
+            gameoverPopup.scoreText.text = $"SCORE\n{score}";
         }
         StartCoroutine(TimeCoroutine());
     }
