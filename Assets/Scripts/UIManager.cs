@@ -100,4 +100,21 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(comboDelay);
         comboText.gameObject.SetActive(false);
     }
+
+    public void SetScore(List<Tile> _tiles, int _combo)
+    {
+        int curScore = 0;
+
+        foreach(Tile _tile in _tiles)
+        {
+            curScore += _tile.item.value;
+        }
+        if(_combo != 0)
+        {
+            curScore *= _combo;
+        }
+
+        score += curScore;
+        scoreText.text = $"SCORE\n{score}";
+    }
 }

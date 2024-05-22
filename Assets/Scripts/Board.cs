@@ -180,11 +180,13 @@ public class Board : MonoBehaviour
         }
         await sequence.Play().AsyncWaitForCompletion();
 
-        popTiles.Clear();
-
         popCount++;
 
-        if(popCount > 2)
+        UIManager.instance.SetScore(_tiles, popCount);
+
+        popTiles.Clear();
+
+        if (popCount > 2)
         {
             UIManager.instance.bombButton.interactable = true;
             UIManager.instance.ShowCombo(popCount);
