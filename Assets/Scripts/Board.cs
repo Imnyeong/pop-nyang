@@ -59,6 +59,8 @@ public class Board : MonoBehaviour
 
     public async void OnClickTile(Tile _tile)
     {
+        popCount = 0;
+
         if (!canControl)
             return;
 
@@ -71,17 +73,17 @@ public class Board : MonoBehaviour
         {
             if (Array.Exists(selectedTiles[0].checkTiles, x => x == _tile))
             {
+                canControl = false;
+
                 await DoSwap(selectedTiles[0], selectedTiles[1]);
                 await CheckAllTiles();
 
                 if (canPop == false && popCount == 0)
                 {
                     await DoSwap(selectedTiles[1], selectedTiles[0]);
-                    canPop = false;
                 }
             }
             selectedTiles.Clear();
-            popCount = 0;
         }
     }
 
@@ -117,7 +119,6 @@ public class Board : MonoBehaviour
     public async Task CheckAllTiles()
     {
         canPop = false;
-        canControl = false;
 
         foreach (Row _row in rows)
         {
@@ -130,7 +131,6 @@ public class Board : MonoBehaviour
                 {
                     canPop = true;
                     popTiles.AddRange(checkedTiles);
-                    popCount++;
                 }
             }
         }
@@ -188,5 +188,38 @@ public class Board : MonoBehaviour
         await sequence.Play().AsyncWaitForCompletion();
 
         popTiles.Clear();
+
+        popCount++;
+    }
+
+    public void OnClickBomb()
+    {
+        if (!canControl)
+            return;
+
+        Bomb();
+    }
+
+    public async void Bomb()
+    {
+        if (!canControl)
+            return;
+
+        canControl = false;
+
+        Item item = items[UnityEngine.Random.Range(0, items.Length)];
+
+        foreach (Row _row in rows)
+        {
+            foreach (Tile _tile in _row.tiles)
+            {
+                if(_tile.item == item)
+                {
+                    popTiles.Add(_tile);
+                }
+            }
+        }
+        await Pop(popTiles);
+        await CheckAllTiles();
     }
 }
