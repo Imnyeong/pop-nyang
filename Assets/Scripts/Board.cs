@@ -18,7 +18,7 @@ public class Board : MonoBehaviour
     private List<Tile> popTiles = new List<Tile>();
 
     private bool canPop = false;
-    private bool canControl = false;
+    public bool canControl = false;
 
     private float moveDelay = 0.2f;
     private int popCount = 0;
@@ -39,6 +39,7 @@ public class Board : MonoBehaviour
 
     public async void SetAllTiles()
     {
+        popCount = 0;
         foreach (Row _row in rows)
         {
             foreach (Tile _tile in _row.tiles)
@@ -47,14 +48,6 @@ public class Board : MonoBehaviour
             }
         }
         await CheckAllTiles();
-    }
-
-    public void OnClickRefresh()
-    {
-        if (!canControl)
-            return;
-
-        SetAllTiles();
     }
 
     public async void OnClickTile(Tile _tile)
@@ -190,22 +183,18 @@ public class Board : MonoBehaviour
         popTiles.Clear();
 
         popCount++;
-    }
 
-    public void OnClickBomb()
-    {
-        if (!canControl)
-            return;
-
-        Bomb();
+        if(popCount > 2)
+        {
+            UIManager.instance.bombButton.interactable = true;
+        }
     }
 
     public async void Bomb()
     {
-        if (!canControl)
-            return;
-
+        UIManager.instance.bombButton.interactable = false;
         canControl = false;
+        popCount = 0;
 
         Item item = items[UnityEngine.Random.Range(0, items.Length)];
 
