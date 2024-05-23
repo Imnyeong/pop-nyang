@@ -48,7 +48,12 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.1f);
         timer -= 0.1f;
         timeSlider.value = timer / timeValue;
-        if(timer <= 0.0f)
+
+        if(timer == 10.0f)
+        {
+            AudioManager.instance.PlayTimer();
+        }
+        if (timer <= 0.0f)
         {
             StopAllCoroutines();
             gameoverPopup.gameObject.SetActive(true);
@@ -62,8 +67,8 @@ public class UIManager : MonoBehaviour
         if (!Board.instance.canControl)
             return;
 
+        AudioManager.instance.PlayRefresh();
         Board.instance.SetAllTiles();
-
         StartCoroutine(RefreshCoroutine());
     }
 
@@ -79,6 +84,7 @@ public class UIManager : MonoBehaviour
         if (!Board.instance.canControl)
             return;
 
+        AudioManager.instance.PlayBomb();
         Board.instance.Bomb();
     }
 
