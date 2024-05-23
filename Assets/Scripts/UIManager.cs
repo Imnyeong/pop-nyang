@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
         timer -= 0.1f;
         timeSlider.value = timer / timeValue;
 
-        if(timer == 10.0f)
+        if(timer <= 10.0f && !AudioManager.instance.timerSource.isPlaying)
         {
             AudioManager.instance.PlayTimer();
         }

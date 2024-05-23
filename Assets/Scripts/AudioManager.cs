@@ -9,7 +9,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private AudioSource effectSource;
     [SerializeField] private AudioSource tileSource;
-    [SerializeField] private AudioSource timerSource;
+    public AudioSource timerSource;
 
 
     [SerializeField] private AudioClip[] clips;
