@@ -11,7 +11,6 @@ public class UIManager : MonoBehaviour
 
     public Button refreshButton;
     public Button bombButton;
-    public Button soundButton;
 
     public GameOverPopup gameoverPopup;
 

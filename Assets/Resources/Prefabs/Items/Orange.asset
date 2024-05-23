@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Orange
   m_EditorClassIdentifier: 
   value: 1
-  image: {fileID: 21300000, guid: b959fa06f357044f6addbe6e512f9a38, type: 3}
+  image: {fileID: 21300000, guid: d4e12e06411144f309221ec8b5b53085, type: 3}

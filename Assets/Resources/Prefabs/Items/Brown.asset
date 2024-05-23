@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Brown
   m_EditorClassIdentifier: 
   value: 1
-  image: {fileID: 21300000, guid: aa04723b244d74a87a0e323e9ee50449, type: 3}
+  image: {fileID: 21300000, guid: 506580d5464ea4abab97d90aa7c3d81f, type: 3}

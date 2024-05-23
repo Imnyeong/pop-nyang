@@ -10,9 +10,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource effectSource;
     [SerializeField] private AudioSource tileSource;
     public AudioSource timerSource;
-
-
     [SerializeField] private AudioClip[] clips;
+
+    public Sprite[] muteSprites;
 
     private void Awake()
     {
@@ -22,6 +22,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void OnClickkMute()
+    {
+        isMute = !isMute;
+        bgmSource.volume = isMute ? 0.0f : 1.0f;
+    }
     private void Start()
     {
         if (isMute)
@@ -29,6 +34,13 @@ public class AudioManager : MonoBehaviour
         bgmSource.Play();
     }
 
+    public void PlayCLick()
+    {
+        if (isMute)
+            return;
+        tileSource.clip = Array.Find(clips, clip => clip.name == "Click");
+        tileSource.Play();
+    }
     public void PlaySwap()
     {
         if (isMute)
