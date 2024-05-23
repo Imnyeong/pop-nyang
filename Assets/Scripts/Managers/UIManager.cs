@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
         if (timer <= 0.0f)
         {
             StopAllCoroutines();
+            AudioManager.instance.StopAudio();
             gameoverPopup.gameObject.SetActive(true);
             gameoverPopup.scoreText.text = $"SCORE\n{score}";
         }

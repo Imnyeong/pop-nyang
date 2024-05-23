@@ -55,6 +55,13 @@ public class AudioManager : MonoBehaviour
         bgmSource.Play();
     }
 
+    public void StopAudio()
+    {
+        bgmSource.Stop();
+        effectSource.Stop();
+        timerSource.Stop();
+    }
+
     public void PlayCLick()
     {
         if (isMute)
