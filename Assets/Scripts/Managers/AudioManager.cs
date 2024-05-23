@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource tileSource;
     public AudioSource timerSource;
     [SerializeField] private AudioClip[] clips;
+    [SerializeField] private Button muteButton;
 
     public Sprite[] muteSprites;
 
@@ -20,14 +22,33 @@ public class AudioManager : MonoBehaviour
         {
             instance = this;
         }
+        isMute = PlayerPrefs.GetInt("Mute") == 1;
     }
 
-    public void OnClickkMute()
+    private void Start()
+    {
+        muteButton.GetComponent<Image>().sprite = muteSprites[Convert.ToInt32(isMute)];
+        muteButton.onClick.AddListener(OnClickMute);
+
+        PlayBGM();
+    }
+
+    public void OnClickMute()
     {
         isMute = !isMute;
+
+        PlayerPrefs.SetInt("Mute", Convert.ToInt32(isMute));
+        PlayCLick();
+        muteButton.GetComponent<Image>().sprite = muteSprites[Convert.ToInt32(isMute)];
         bgmSource.volume = isMute ? 0.0f : 1.0f;
+
+        if (!isMute)
+        {
+            bgmSource.Play();
+        }
     }
-    private void Start()
+
+    public void PlayBGM()
     {
         if (isMute)
             return;

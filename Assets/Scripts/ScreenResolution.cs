@@ -10,8 +10,8 @@ public class ScreenResolution : MonoBehaviour
 
     private void SetResolution()
     {
-        int setWidth = 1920;
-        int setHeight = 1080;
+        int setWidth = 1080;
+        int setHeight = 1920;
 
         int deviceWidth = Screen.width;
         int deviceHeight = Screen.height;

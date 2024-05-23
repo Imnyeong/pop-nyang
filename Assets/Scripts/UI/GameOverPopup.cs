@@ -11,10 +11,14 @@ public class GameOverPopup : MonoBehaviour
 
     void Awake()
     {
-        replayButton.onClick.AddListener(delegate {
+        replayButton.onClick.AddListener(delegate
+        {
+            AudioManager.instance.PlayCLick();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	    });
-        exitButton.onClick.AddListener(delegate {
+        exitButton.onClick.AddListener(delegate
+        {
+            AudioManager.instance.PlayCLick();
             Application.Quit();
 	    });
     }
