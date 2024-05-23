@@ -37,8 +37,36 @@ public class Board : MonoBehaviour
         SetAllTiles();
     }
 
+    void Update()
+    {
+        TouchCheck();
+    }
+
+    public void TouchCheck()
+    {
+        if (Input.GetMouseButton(0) && canControl)
+        {
+            Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D ray = Physics2D.Raycast(touchPos, Camera.main.transform.forward);
+
+            if (ray.collider != null)
+            {
+                Tile touchTile = ray.transform.gameObject.GetComponent<Tile>();
+                if (touchTile != null && !selectedTiles.Contains(touchTile))
+                {
+                    OnClickTile(touchTile);
+                }
+            }
+        }
+        if (Input.GetMouseButtonUp(0) && selectedTiles.Count == 1)
+        {
+            selectedTiles.Clear();
+        }
+    }
+
     public async void SetAllTiles()
     {
+        canControl = false;
         popCount = 0;
         foreach (Row _row in rows)
         {

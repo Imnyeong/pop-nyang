@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] private Button button;
-
     [HideInInspector] public int x;
     [HideInInspector] public int y;
     [HideInInspector] public Item item;
@@ -24,8 +22,6 @@ public class Tile : MonoBehaviour
     {
         y = Array.IndexOf(Board.instance.rows, this.transform.parent.GetComponentInParent<Row>());
         x = Array.IndexOf(Board.instance.rows[y].tiles, this);
-
-        button.onClick.AddListener(delegate { Board.instance.OnClickTile(this); });
     }
     public void SetTile(Item _item)
     {
