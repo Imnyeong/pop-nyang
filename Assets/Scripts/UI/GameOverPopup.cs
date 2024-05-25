@@ -9,7 +9,7 @@ public class GameOverPopup : MonoBehaviour
 
     public Text scoreText;
 
-    void Awake()
+    private void Awake()
     {
         replayButton.onClick.AddListener(delegate
         {
@@ -19,8 +19,8 @@ public class GameOverPopup : MonoBehaviour
         exitButton.onClick.AddListener(delegate
         {
             AudioManager.instance.PlayCLick();
-            Application.Quit();
-	    });
+            SceneManager.LoadScene("Intro");
+        });
     }
     
 }

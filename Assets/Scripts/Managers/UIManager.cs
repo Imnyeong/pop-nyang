@@ -32,7 +32,7 @@ public class UIManager : MonoBehaviour
             instance = this;
         }
     }
-    void Start()
+    private void Start()
     {
         refreshButton.onClick.AddListener(OnClickRefresh);
         bombButton.onClick.AddListener(OnClickBomb);
@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(TimeCoroutine());
     }
 
-    public IEnumerator TimeCoroutine()
+    private IEnumerator TimeCoroutine()
     {
         yield return new WaitForSecondsRealtime(0.1f);
         timer -= 0.1f;
@@ -56,13 +56,14 @@ public class UIManager : MonoBehaviour
         {
             StopAllCoroutines();
             AudioManager.instance.StopAudio();
+            Board.instance.canControl = false;
             gameoverPopup.gameObject.SetActive(true);
             gameoverPopup.scoreText.text = $"SCORE\n{score}";
         }
         StartCoroutine(TimeCoroutine());
     }
 
-    public void OnClickRefresh()
+    private void OnClickRefresh()
     {
         if (!Board.instance.canControl)
             return;
@@ -72,14 +73,14 @@ public class UIManager : MonoBehaviour
         StartCoroutine(RefreshCoroutine());
     }
 
-    public IEnumerator RefreshCoroutine()
+    private IEnumerator RefreshCoroutine()
     {
         refreshButton.interactable = false;
         yield return new WaitForSecondsRealtime(refreshDelay);
         refreshButton.interactable = true;
     }
 
-    public void OnClickBomb()
+    private void OnClickBomb()
     {
         if (!Board.instance.canControl)
             return;
@@ -99,7 +100,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(comboCoroutine);
     }
 
-    public IEnumerator ComboCoroutine(int _combo)
+    private IEnumerator ComboCoroutine(int _combo)
     {
         comboText.text = $"{_combo} Combo!";
         comboText.gameObject.SetActive(true);

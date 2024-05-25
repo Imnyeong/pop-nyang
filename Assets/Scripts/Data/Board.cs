@@ -23,7 +23,7 @@ public class Board : MonoBehaviour
     private float moveDelay = 0.2f;
     private int popCount = 0;
 
-    public void Awake()
+    private void Awake()
     {
         if(instance == null)
         {
@@ -31,20 +31,20 @@ public class Board : MonoBehaviour
         }
     }
 
-    public void Start()
+    private void Start()
     {
         items = Resources.LoadAll<Item>("Prefabs/Items");
         SetAllTiles();
     }
 
-    void Update()
+    private void Update()
     {
         TouchCheck();
     }
 
-    public void TouchCheck()
+    private void TouchCheck()
     {
-        if (Input.GetMouseButton(0) && canControl)
+        if (canControl && Input.GetMouseButton(0))
         {
             Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D ray = Physics2D.Raycast(touchPos, Camera.main.transform.forward);
@@ -78,7 +78,7 @@ public class Board : MonoBehaviour
         await CheckAllTiles();
     }
 
-    public async void OnClickTile(Tile _tile)
+    private async void OnClickTile(Tile _tile)
     {
         popCount = 0;
 
@@ -110,7 +110,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    public async Task DoSwap(Tile _tile1, Tile _tile2)
+    private async Task DoSwap(Tile _tile1, Tile _tile2)
     {
         Sequence sequence = DOTween.Sequence();
 
@@ -139,7 +139,7 @@ public class Board : MonoBehaviour
         await sequence.Play().AsyncWaitForCompletion();
     }
 
-    public async Task CheckAllTiles()
+    private async Task CheckAllTiles()
     {
         canPop = false;
 
@@ -170,7 +170,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    public async Task CheckTile(Tile _tile)
+    private async Task CheckTile(Tile _tile)
     {
         if (checkedTiles.Count == 0)
         {
@@ -187,7 +187,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    public async Task Pop(List<Tile> _tiles)
+    private async Task Pop(List<Tile> _tiles)
     {
         Sequence sequence = DOTween.Sequence();
 
