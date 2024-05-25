@@ -23,6 +23,8 @@ public class Board : MonoBehaviour
     private float moveDelay = 0.2f;
     private int popCount = 0;
 
+    [SerializeField] private Button startPanel;
+
     private void Awake()
     {
         if(instance == null)
@@ -33,6 +35,7 @@ public class Board : MonoBehaviour
 
     private void Start()
     {
+        startPanel.onClick.AddListener(OnClickPlay);
         items = Resources.LoadAll<Item>("Prefabs/Items");
         SetAllTiles();
     }
@@ -40,6 +43,25 @@ public class Board : MonoBehaviour
     private void Update()
     {
         TouchCheck();
+    }
+    private void SetAllTiles()
+    {
+        canControl = false;
+        popCount = 0;
+        foreach (Row _row in rows)
+        {
+            foreach (Tile _tile in _row.tiles)
+            {
+                _tile.SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
+            }
+        }
+    }
+
+    private async void OnClickPlay()
+    {
+        UIManager.instance.StartTimer();
+        startPanel.gameObject.SetActive(false);
+        await CheckAllTiles();
     }
 
     private void TouchCheck()
@@ -64,17 +86,9 @@ public class Board : MonoBehaviour
         }
     }
 
-    public async void SetAllTiles()
+    public async void RefreshAllTiles()
     {
-        canControl = false;
-        popCount = 0;
-        foreach (Row _row in rows)
-        {
-            foreach (Tile _tile in _row.tiles)
-            {
-                _tile.SetTile(items[UnityEngine.Random.Range(0, items.Length)]);
-            }
-        }
+        SetAllTiles();
         await CheckAllTiles();
     }
 

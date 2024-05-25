@@ -38,6 +38,10 @@ public class UIManager : MonoBehaviour
         bombButton.onClick.AddListener(OnClickBomb);
 
         score = 0;
+    }
+
+    public void StartTimer()
+    {
         timer = timeValue;
         StartCoroutine(TimeCoroutine());
     }
@@ -69,7 +73,7 @@ public class UIManager : MonoBehaviour
             return;
 
         AudioManager.instance.PlayRefresh();
-        Board.instance.SetAllTiles();
+        Board.instance.RefreshAllTiles();
         StartCoroutine(RefreshCoroutine());
     }
 
