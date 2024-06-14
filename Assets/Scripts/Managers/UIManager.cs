@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Slider timeSlider;
     [SerializeField] private Button refreshButton;
     [SerializeField] private Button bombButton;
+    [SerializeField] private Button startPanel;
+
     [SerializeField] private Text scoreText;
     [SerializeField] private Text comboText;
 
@@ -41,8 +43,15 @@ public class UIManager : MonoBehaviour
     {
         refreshButton.onClick.AddListener(OnClickRefresh);
         bombButton.onClick.AddListener(OnClickBomb);
+        startPanel.onClick.AddListener(OnClickPlay);
 
         score = 0;
+    }
+    private void OnClickPlay()
+    {
+        StartTimer();
+        startPanel.gameObject.SetActive(false);
+        Board.instance.StartGame();
     }
     public void StartTimer()
     {
@@ -111,7 +120,7 @@ public class UIManager : MonoBehaviour
         {
             StopAllCoroutines();
             AudioManager.instance.StopAudio();
-            Board.instance.canControl = false;
+            Board.instance.GameOver();
             gameoverPopup.SetScore(score);
             gameoverPopup.gameObject.SetActive(true);
         }

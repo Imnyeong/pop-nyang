@@ -18,12 +18,10 @@ public class Board : MonoBehaviour
     private List<Tile> popTiles = new List<Tile>();
 
     private bool canPop = false;
-    public bool canControl = false;
+    public bool canControl { get; private set; } = false;
 
-    private float moveDelay = 0.2f;
+    private const float moveDelay = 0.2f;
     private int popCount = 0;
-
-    [SerializeField] private Button startPanel;
 
     private void Awake()
     {
@@ -32,17 +30,18 @@ public class Board : MonoBehaviour
             instance = this;
         }
     }
-
     private void Start()
     {
-        startPanel.onClick.AddListener(OnClickPlay);
-        items = Resources.LoadAll<Item>("Prefabs/Items");
-        SetAllTiles();
+        SetGame();
     }
-
     private void Update()
     {
         TouchCheck();
+    }
+    private void SetGame()
+    {
+        items = Resources.LoadAll<Item>("Prefabs/Items");
+        SetAllTiles();
     }
     private void SetAllTiles()
     {
@@ -56,14 +55,14 @@ public class Board : MonoBehaviour
             }
         }
     }
-
-    private async void OnClickPlay()
+    public void GameOver()
     {
-        UIManager.instance.StartTimer();
-        startPanel.gameObject.SetActive(false);
+        canControl = false;
+    }
+    public async void StartGame()
+    {
         await CheckAllTiles();
     }
-
     private void TouchCheck()
     {
         if (canControl && Input.GetMouseButton(0))
@@ -85,13 +84,11 @@ public class Board : MonoBehaviour
             selectedTiles.Clear();
         }
     }
-
     public async void RefreshAllTiles()
     {
         SetAllTiles();
         await CheckAllTiles();
     }
-
     private async void OnClickTile(Tile _tile)
     {
         popCount = 0;
@@ -123,7 +120,6 @@ public class Board : MonoBehaviour
             selectedTiles.Clear();
         }
     }
-
     private async Task DoSwap(Tile _tile1, Tile _tile2)
     {
         Sequence sequence = DOTween.Sequence();
@@ -147,12 +143,10 @@ public class Board : MonoBehaviour
             Item tmpItem = _tile1.item;
             _tile1.item = _tile2.item;
             _tile2.item = tmpItem;
-
         });
 
         await sequence.Play().AsyncWaitForCompletion();
     }
-
     private async Task CheckAllTiles()
     {
         canPop = false;
@@ -183,7 +177,6 @@ public class Board : MonoBehaviour
             canControl = true;
         }
     }
-
     private async Task CheckTile(Tile _tile)
     {
         if (checkedTiles.Count == 0)
@@ -200,7 +193,6 @@ public class Board : MonoBehaviour
             }
         }
     }
-
     private async Task Pop(List<Tile> _tiles)
     {
         Sequence sequence = DOTween.Sequence();
@@ -239,7 +231,6 @@ public class Board : MonoBehaviour
             UIManager.instance.ShowCombo(popCount);
         }
     }
-
     public async void Bomb()
     {
         UIManager.instance.SetBombButton(false);

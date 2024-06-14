@@ -361,7 +361,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82296f3deeaf45dfa744eb0cf93dfd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isMute: 0
   bgmSource: {fileID: 1329954325}
   effectSource: {fileID: 610676449}
   tileSource: {fileID: 620649392}

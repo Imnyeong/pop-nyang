@@ -2513,8 +2513,6 @@ MonoBehaviour:
   - {fileID: 1206189195}
   - {fileID: 1269022908}
   - {fileID: 1377082257}
-  canControl: 0
-  startPanel: {fileID: 559837460}
 --- !u!1001 &1269022906
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3008,6 +3006,7 @@ MonoBehaviour:
   timeSlider: {fileID: 28680345}
   refreshButton: {fileID: 384568642}
   bombButton: {fileID: 1227238636}
+  startPanel: {fileID: 559837460}
   scoreText: {fileID: 704745353}
   comboText: {fileID: 1050635824}
   timer: 0
