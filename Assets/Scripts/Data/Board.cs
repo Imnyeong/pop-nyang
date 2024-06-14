@@ -109,14 +109,14 @@ public class Board : MonoBehaviour
             if (Array.Exists(selectedTiles[0].checkTiles, x => x == _tile))
             {
                 canControl = false;
-                AudioManager.instance.PlaySwap();
+                AudioManager.instance.PlayEffect(AudioManager.EffectType.Swap);
 
                 await DoSwap(selectedTiles[0], selectedTiles[1]);
                 await CheckAllTiles();
 
                 if (canPop == false && popCount == 0)
                 {
-                    AudioManager.instance.PlayFail();
+                    AudioManager.instance.PlayEffect(AudioManager.EffectType.Fail);
                     await DoSwap(selectedTiles[1], selectedTiles[0]);
                 }
             }
@@ -210,7 +210,7 @@ public class Board : MonoBehaviour
             sequence.Join(_tile.image.transform.DOScale(Vector3.zero, moveDelay));
         }
 
-        AudioManager.instance.PlayPop();
+        AudioManager.instance.PlayEffect(AudioManager.EffectType.Pop);
 
         await sequence.Play().AsyncWaitForCompletion();
 
@@ -235,14 +235,14 @@ public class Board : MonoBehaviour
 
         if (popCount > 2)
         {
-            UIManager.instance.bombButton.interactable = true;
+            UIManager.instance.SetBombButton(true);
             UIManager.instance.ShowCombo(popCount);
         }
     }
 
     public async void Bomb()
     {
-        UIManager.instance.bombButton.interactable = false;
+        UIManager.instance.SetBombButton(false);
         canControl = false;
         popCount = 0;
 

@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
-    [HideInInspector] public int x;
-    [HideInInspector] public int y;
-    [HideInInspector] public Item item;
+    private int x { get; set; }
+    private int y { get; set; }
 
-    [HideInInspector] public Tile top => y == 0 ? null : Board.instance.rows[y - 1].tiles[x];
-    [HideInInspector] public Tile bottom => y == Board.instance.rows.Length - 1 ? null : Board.instance.rows[y + 1].tiles[x];
-    [HideInInspector] public Tile left => x == 0 ? null : Board.instance.rows[y].tiles[x - 1];
-    [HideInInspector] public Tile right => x == Board.instance.rows[y].tiles.Length - 1 ? null : Board.instance.rows[y].tiles[x + 1];
+    [HideInInspector] private Tile top => y == 0 ? null : Board.instance.rows[y - 1].tiles[x];
+    [HideInInspector] private Tile bottom => y == Board.instance.rows.Length - 1 ? null : Board.instance.rows[y + 1].tiles[x];
+    [HideInInspector] private Tile left => x == 0 ? null : Board.instance.rows[y].tiles[x - 1];
+    [HideInInspector] private Tile right => x == Board.instance.rows[y].tiles.Length - 1 ? null : Board.instance.rows[y].tiles[x + 1];
+    [HideInInspector] public Item item;
 
     public Tile[] checkTiles => new Tile[] { top, bottom, left, right };
 

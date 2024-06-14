@@ -5,16 +5,24 @@ using UnityEngine.UI;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance = null;
-    public bool isMute = false;
+    public bool isMute { get; private set; }
 
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private AudioSource effectSource;
     [SerializeField] private AudioSource tileSource;
-    public AudioSource timerSource;
-    [SerializeField] private AudioClip[] clips;
-    [SerializeField] private Button muteButton;
+    [SerializeField] private AudioSource timerSource;
 
-    public Sprite[] muteSprites;
+    [SerializeField] private AudioClip[] clips;
+
+    public enum EffectType
+    {
+        Pop,
+        Bomb,
+        Fail,
+        Swap,
+        Refresh,
+        Click
+    };
 
     private void Awake()
     {
@@ -22,24 +30,33 @@ public class AudioManager : MonoBehaviour
         {
             instance = this;
         }
+        DontDestroyOnLoad(this);
+
+        if(!PlayerPrefs.HasKey("Mute"))
+        {
+            PlayerPrefs.SetInt("Mute", 0);
+        }
         isMute = PlayerPrefs.GetInt("Mute") == 1;
     }
-
     private void Start()
     {
-        muteButton.GetComponent<Image>().sprite = muteSprites[Convert.ToInt32(isMute)];
-        muteButton.onClick.AddListener(OnClickMute);
-
+        Init();
+    }
+    private void Init()
+    {
         PlayBGM();
     }
-
+    public bool GetTimerPlaying()
+    {
+        return timerSource.isPlaying;
+    }
     public void OnClickMute()
     {
         isMute = !isMute;
 
         PlayerPrefs.SetInt("Mute", Convert.ToInt32(isMute));
-        PlayCLick();
-        muteButton.GetComponent<Image>().sprite = muteSprites[Convert.ToInt32(isMute)];
+        PlayEffect(EffectType.Click);
+
         bgmSource.volume = isMute ? 0.0f : 1.0f;
 
         if (!isMute)
@@ -47,68 +64,58 @@ public class AudioManager : MonoBehaviour
             bgmSource.Play();
         }
     }
-
     public void PlayBGM()
     {
         if (isMute)
             return;
         bgmSource.Play();
     }
-
     public void StopAudio()
     {
         bgmSource.Stop();
         effectSource.Stop();
         timerSource.Stop();
     }
-
-    public void PlayCLick()
+    public void PlayEffect(EffectType _type)
     {
         if (isMute)
             return;
-        tileSource.clip = Array.Find(clips, clip => clip.name == "Click");
-        tileSource.Play();
-    }
-    public void PlaySwap()
-    {
-        if (isMute)
-            return;
-        tileSource.clip = Array.Find(clips, clip => clip.name == "Swap");
-        tileSource.Play();
-    }
 
-    public void PlayFail()
-    {
-        if (isMute)
-            return;
-        tileSource.clip = Array.Find(clips, clip => clip.name == "Fail");
-        tileSource.Play();
+        switch (_type)
+        {
+            case EffectType.Fail:
+                tileSource.clip = Array.Find(clips, clip => clip.name == "Fail");
+                break;
+            case EffectType.Swap:
+                tileSource.clip = Array.Find(clips, clip => clip.name == "Swap");
+                break;
+            case EffectType.Pop:
+                tileSource.clip = Array.Find(clips, clip => clip.name == "Pop");
+                break;
+            case EffectType.Bomb:
+                effectSource.clip = Array.Find(clips, clip => clip.name == "Bomb");
+                break;
+            case EffectType.Refresh:
+                effectSource.clip = Array.Find(clips, clip => clip.name == "Refresh");
+                break;
+            case EffectType.Click:
+                effectSource.clip = Array.Find(clips, clip => clip.name == "Click");
+                break;
+        }
+        switch(_type)
+        {
+            case EffectType.Bomb:
+            case EffectType.Refresh:
+            case EffectType.Click:
+                effectSource.Play();
+                break;
+            case EffectType.Pop:
+            case EffectType.Fail:
+            case EffectType.Swap:
+                tileSource.Play();
+                break;
+        }
     }
-
-    public void PlayPop()
-    {
-        if (isMute)
-            return;
-        tileSource.clip = Array.Find(clips, clip => clip.name == "Pop");
-        tileSource.Play();
-    }
-
-    public void PlayBomb()
-    {
-        if (isMute)
-            return;
-        effectSource.clip = Array.Find(clips, clip => clip.name == "Bomb");
-        effectSource.Play();
-    }
-
-    public void PlayRefresh()
-    {
-        if (isMute)
-            return;
-        effectSource.clip = Array.Find(clips, clip => clip.name == "Refresh");
-        effectSource.Play();
-    }
-
     public void PlayTimer()
     {
         if (isMute)

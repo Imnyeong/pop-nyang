@@ -5,12 +5,12 @@ public class IntroManager : MonoBehaviour
 {
     public void OnClickStart()
     {
-        AudioManager.instance.PlayCLick();
+        AudioManager.instance.PlayEffect(AudioManager.EffectType.Click);
         SceneManager.LoadScene("InGame");
     }
     public void OnClickExit()
     {
-        AudioManager.instance.PlayCLick();
+        AudioManager.instance.PlayEffect(AudioManager.EffectType.Click);
         Application.Quit();
     }
 }
